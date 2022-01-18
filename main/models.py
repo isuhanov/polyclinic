@@ -64,7 +64,7 @@ class Coupons(models.Model):
     doctor = models.ForeignKey(Doctors,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Врач')
 
     def __str__(self):
-        return self.coupons_id
+        return str(self.coupons_id)
 
     class Meta:
         verbose_name = 'Талон'

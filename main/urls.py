@@ -4,5 +4,6 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='index_url'),
+    path('coupon/', CouponView.as_view(), name='coupon_url'),
     path('create_coupon/', CreateCoupon.as_view(), name='create_coupon_url'),
 ]

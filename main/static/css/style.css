@@ -1,0 +1,130 @@
+/* Обнуление*/
+*{
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+*,*:before,*:after{
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+:focus,:active{outline: none;}
+a:focus,a:active{outline: none;}
+nav,footer,header,aside{display: block;}
+html,body{
+	height: 100%;
+	width: 100%;
+	font-size: 100%;
+	line-height: 1;
+	font-size: 14px;
+	-ms-text-size-adjust: 100%;
+	-moz-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
+input,button,textarea{font-family:inherit;}
+input::-ms-clear{display: none;}
+button{cursor: pointer;}
+button::-moz-focus-inner {padding:0;border:0;}
+a, a:visited{text-decoration: none;}
+a:hover{text-decoration: none;}
+ul li{list-style: none;}
+img{vertical-align: top;}
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
+
+/*-------------------- */
+
+/* .wrapper{
+    display: grid;
+    grid-template-rows: 70px 1fr;
+} */
+
+.container{
+    width: 80%;
+    margin: 0 auto;
+}
+
+header{
+    background-color: rgb(238, 238, 238);
+    box-shadow: 2px 8px 23px 0px rgba(0, 0, 0, 0.2);
+    min-height: 13vh;
+}
+
+header .container{
+    height: 13vh;
+}
+
+.succes{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.nav-menu{
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.btn{
+    display: inline-block;
+    padding: 15px;
+    background-color: rgb(187, 0, 72);
+    color: white;
+    font-size: 17px;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    transition: all .2s ease-out;
+}
+
+.btn:hover{
+    background-color: rgb(253, 0, 97);
+}
+
+.btn:active{
+    background-color: rgb(121, 0, 46);
+}
+
+
+/* ---------------------------------------------------------- menu-block ------------------------------------------ */
+
+.menu-block{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 87vh;
+}
+
+
+/* ------------------------------------------------------- forms --------------------------*/
+
+.title{
+    font-size: 23px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 30%;
+    margin: 40px auto;
+}
+
+.form_input{
+    border: 1px solid rgb(63, 63, 63);
+    height: 35px;
+    border-radius: 5px;
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+.form-btn{
+    max-width: 50%;
+    margin: 0 auto;
+}

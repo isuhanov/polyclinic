@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Главная
+{% endblock %}
+
+{% block content %}
+    <div class="coupon-view view-block">
+        {% for coupon in coupons %}
+            <div class="view-item">
+                
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
