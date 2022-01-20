@@ -9,7 +9,30 @@
     <div class="coupon-view view-block">
         {% for coupon in coupons %}
             <div class="view-item">
-                
+                <div class="coupon-info">
+                    <div class="coupon-date">
+                        <p>{{ coupon.adm_date }}</p>
+                    </div>
+                    <div class="coupon-doctor-direction">
+                        <p>{{ coupon.doctor.direction }}</p>
+                    </div>
+                    <div class="coupon-doctor">
+                        <p>{{ coupon.doctor }}</p>
+                    </div>
+                    <div class="coupon-cab">
+                        <p><span style="font-weight: 700;">Кабинет:</span> {{ coupon.doctor.cab }}</p>
+                    </div>
+                    {% if request.user.is_staff %}
+                        <div class="coupon-doctor">
+                            <p>{{ coupon.patient.user.id }}. {{ coupon.patient.user.first_name }} {{ coupon.patient.user.last_name }} ({{ coupon.patient.user.username }})</p>
+                        </div>
+                    {% endif %}
+
+                </div>
+                <div class="coupon-btn">
+                    <a href="{{ coupon.get_update_url }}" class="btn">Изменить</a>
+                    <a href="{{ coupon.get_delete_url }}" class="btn">Отменить</a>
+                </div>
             </div>
         {% endfor %}
     </div>

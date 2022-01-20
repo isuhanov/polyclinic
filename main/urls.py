@@ -4,6 +4,12 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='index_url'),
+    path('login/', LoginView.as_view(), name='login_url'),
+    path('logout/', logout_view, name='logout_url'),
+    path('registration/', RegistrView.as_view(), name='reg_url'),
     path('coupon/', CouponView.as_view(), name='coupon_url'),
     path('create_coupon/', CreateCoupon.as_view(), name='create_coupon_url'),
+    path('update_coupon/<int:coupon_id>/', UpdateCoupon.as_view(), name='update_coupon_url'),
+    path('delete_coupon/<int:coupon_id>/', DeleteCoupon.as_view(), name='delete_coupon_url'),
+    path('add_patient/', AddPatientView.as_view(), name='add_parient_url'),
 ]

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Registration
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="registr-form">
+        <form action="" method="post">
+            <h2 class="title">Регистрация</h2>
+
+            {% csrf_token %}
+            {{ form.first_name }}
+            {{ form.last_name }}
+            {{ form.bd }}
+            {{ form.policy }}
+            {{ form.passport }}
+            {{ form.login }}
+            {{ form.password }}
+            {{ form.password2 }}
+
+            {{ form.errors }}
+
+            <button type="submit" class="btn form-btn">Зарегистрироваться</button>
+        </form>
+    </div>
+{% endblock %}

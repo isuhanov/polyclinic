@@ -1,3 +1,4 @@
+from statistics import mode
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
@@ -48,6 +49,7 @@ class Doctors(models.Model):
     doctor_id = models.AutoField(primary_key=True, blank=False, verbose_name='ID врача')
     fio = models.CharField(max_length=100, blank=False, verbose_name='ФИО врача')
     direction = models.ForeignKey(DirectionDoctors,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Напрвление врача')
+    cab = models.CharField(max_length=3, blank=False, verbose_name='Номер кабинета', default='')
 
     def __str__(self):
         return self.fio
@@ -62,6 +64,12 @@ class Coupons(models.Model):
     adm_date = models.DateTimeField(blank=False, verbose_name='Дата посещения')
     patient = models.ForeignKey(Patients,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Пациент')
     doctor = models.ForeignKey(Doctors,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Врач')
+    
+    def get_update_url(self):
+        return reverse('update_coupon_url', kwargs={'coupon_id': self.coupons_id})
+        
+    def get_delete_url(self):
+        return reverse('delete_coupon_url', kwargs={'coupon_id': self.coupons_id})
 
     def __str__(self):
         return str(self.coupons_id)

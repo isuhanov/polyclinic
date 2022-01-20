@@ -7,9 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="wrapper">
@@ -17,12 +20,47 @@
             <div class="container">
                 <nav class="nav-menu">
                     <ul>
-                        <li><a href="{% url 'index_url' %}" class="btn">На главное меню</a></li>
-                        <li><a href="{% url '#' %}" class="btn">Добавить пациента</a></li>
-                        <li><a href="{% url '#' %}" class="btn">Добавить сотрудника</a></li>
-                        <li><a href="{% url '#' %}" class="btn">Добавить</a></li>
+                        {% if request.path != '/' %}
+                            <li><a href="{% url 'index_url' %}" class="btn">На главное меню</a></li>
+                        {% endif %}
+                        {% if request.user.is_staff %}
+                            <li><a href="" class="btn">Добавить пациента</a></li>
+                            <li><a href="" class="btn">Добавить сотрудника</a></li>
+                            <li><a href="" class="btn">Добавить врача</a></li>
+                        {% endif %}
                     </ul>
                 </nav>
+                <div class="profile-block">
+                    {% if request.user.is_authenticated %}
+
+                        <p class="profile-link" style="color:rgb(187, 0, 72);">
+                            <span class="material-icons material-icons-outlined" style="font-size: 30px;">
+                                account_circle
+                            </span>
+                            <span>
+                                {% if request.user.is_staff %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    {{ request.user.first_name }}
+                                {% endif %}
+                            </span>
+                            <a class="profile-link" style="margin-left: 20px;" href="{% url 'logout_url' %}">
+                                <span class="material-icons material-icons-outlined">
+                                    logout
+                                </span>
+                            </a>
+                        </p>
+                    {% else %}
+                        <a class="profile-link" href="{% url 'login_url' %}">
+                            <span class="material-icons material-icons-outlined" style="font-size: 30px;">
+                                account_circle
+                            </span>
+                            <span>
+                                Войти
+                            </span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </header>
         <main>

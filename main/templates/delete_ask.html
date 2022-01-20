@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Удаление записи к врачу
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="delete_form">
+        <form action="" method="post" class="">
+            <h2 class="title">Вы действительно хотите отменить запись?</h2>
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <button type="submit" class="btn form-btn" style="background-color: rgb(28, 224, 28);">Да</button>
+                <a class="btn form-btn" style="background-color: red;" href="{% url 'index_url' %}">Нет</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
