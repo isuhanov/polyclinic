@@ -76,11 +76,6 @@ class DeleteCoupon(View):
         return render(request, 'success.html')
         
 
-class AddPatientView(View):
-    def get(self, request):
-        return render(request, 'add_patient.html', context={'': ''})
-
-
 class LoginView(View):
     def get(self, request):
         form = LoginForm()
@@ -118,6 +113,42 @@ class RegistrView(View):
         if bound_form.is_valid():
             new_user = bound_form.save_user()
             new_patient = bound_form.save_patient()
-            return HttpResponseRedirect('/login/')
+            if (request.user.is_staff):
+                return render(request, 'success.html')
+            else:
+                return HttpResponseRedirect('/login/')
 
         return render(request, 'register.html', context={'form': bound_form})
+
+
+class RegistrEmplView(View):
+    def get(self, request):
+        form = RegistrEmplForm()
+        return render(request, 'register_empl.html', context={'form': form})
+
+    def post(self, request):
+        pass
+        bound_form = RegistrEmplForm(request.POST)
+
+        if bound_form.is_valid():
+            new_user = bound_form.save_user()
+            new_patient = bound_form.save_empl()
+            return render(request, 'success.html')
+
+        return render(request, 'register_empl.html', context={'form': bound_form})
+
+
+class RegistrDoctorView(View):
+    def get(self, request):
+        form = RegistrDoctorForm()
+        return render(request, 'register_doctor.html', context={'form': form})
+
+    def post(self, request):
+        pass
+        bound_form = RegistrDoctorForm(request.POST)
+
+        if bound_form.is_valid():
+            new_doctor = bound_form.save_doctor()
+            return render(request, 'success.html')
+
+        return render(request, 'register_doctor.html', context={'form': bound_form})

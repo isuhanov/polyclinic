@@ -23,10 +23,17 @@
                         {% if request.path != '/' %}
                             <li><a href="{% url 'index_url' %}" class="btn">На главное меню</a></li>
                         {% endif %}
+                        
                         {% if request.user.is_staff %}
-                            <li><a href="" class="btn">Добавить пациента</a></li>
-                            <li><a href="" class="btn">Добавить сотрудника</a></li>
-                            <li><a href="" class="btn">Добавить врача</a></li>
+                            {% if request.path != '/registration/' %}
+                                <li><a href="{% url 'reg_url' %}" class="btn">Добавить пациента</a></li>
+                            {% endif %}
+                            {% if request.path != '/registration_empl/' %}
+                                <li><a href="{% url 'reg_empl_url' %}" class="btn">Добавить сотрудника</a></li>
+                            {% endif %}
+                            {% if request.path != '/registration_doctor/' %}
+                                <li><a href="{% url 'reg_doctor_url' %}" class="btn">Добавить врача</a></li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                 </nav>

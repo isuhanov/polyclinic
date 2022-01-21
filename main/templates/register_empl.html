@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Registration
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="registr-form">
+        <form action="" method="post">
+            <h2 class="title">Регистрация сотрудника</h2>
+
+            {% csrf_token %}
+            {{ form.first_name }}
+            {{ form.last_name }}
+            {{ form.bd }}
+            {{ form.post }}
+            {{ form.login }}
+            {{ form.password }}
+            {{ form.password2 }}
+
+            {{ form.errors }}
+
+            <button type="submit" class="btn form-btn">Добавить сотрудника</button>
+        </form>
+    </div>
+{% endblock %}

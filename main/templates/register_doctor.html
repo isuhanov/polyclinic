@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Registration doctor
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="registr-form">
+        <form action="" method="post">
+            <h2 class="title">Добавление врача</h2>
+
+            {% csrf_token %}
+            {{ form.fio }}
+            {{ form.direction }}
+            {{ form.cab }}
+
+            {{ form.errors }}
+
+            <button type="submit" class="btn form-btn">Добавить врача</button>
+        </form>
+    </div>
+{% endblock %}
