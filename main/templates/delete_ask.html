@@ -15,8 +15,8 @@
             {% csrf_token %}
             
             <div style="display: flex; flex-direction: row; align-items: center;">
-                <button type="submit" class="btn form-btn" style="background-color: rgb(28, 224, 28);">Да</button>
-                <a class="btn form-btn" style="background-color: red;" href="{% url 'index_url' %}">Нет</a>
+                <button type="submit" class="btn form-btn green">Да</button>
+                <a class="btn form-btn red"  href="{% url 'index_url' %}">Нет</a>
             </div>
         </form>
     </div>

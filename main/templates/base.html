@@ -1,4 +1,5 @@
 {% load static %}
+{% load main_get_filter %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +25,10 @@
                             <li><a href="{% url 'index_url' %}" class="btn">На главное меню</a></li>
                         {% endif %}
                         
+                        {% if request.path != '/registration/' and request.user|is_empl %}
+                                <li><a href="{% url 'reg_url' %}" class="btn">Добавить пациента</a></li>
+                        {% endif %}
+
                         {% if request.user.is_staff %}
                             {% if request.path != '/registration/' %}
                                 <li><a href="{% url 'reg_url' %}" class="btn">Добавить пациента</a></li>

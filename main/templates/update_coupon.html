@@ -31,10 +31,6 @@
               </option>
               {% endfor %}
             </select>
-            {% if request.user.is_staff %}
-              {{ coupon_form.patient }}
-            {% endif %}
-
             {{ coupon_form.errors }}
             <button type="submit" class="btn form-btn">Записаться</button>
             

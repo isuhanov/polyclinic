@@ -51,6 +51,9 @@ class Doctors(models.Model):
     direction = models.ForeignKey(DirectionDoctors,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Напрвление врача')
     cab = models.CharField(max_length=3, blank=False, verbose_name='Номер кабинета', default='')
 
+    def get_chioce_url(self):
+        return reverse('create_coupon_url', kwargs={'doctor_id': self.doctor_id})
+
     def __str__(self):
         return self.fio
 

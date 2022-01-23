@@ -1,3 +1,4 @@
+import json
 from re import L
 import re
 from django.shortcuts import render, redirect
@@ -6,6 +7,7 @@ from django.http import HttpResponseRedirect
 
 
 from django.contrib.auth import authenticate, login, logout
+from matplotlib.style import context
 
 
 from .models import *
@@ -30,29 +32,41 @@ class CouponView(View):
         return render(request, 'coupon.html', context={'coupons': coupons})
 
 
-class CreateCoupon(View):
-    def get(self, request):
-        if request.user.is_authenticated:
+def doctor_choice(request):
+    if request.user.is_authenticated:
             user = request.user
-        else:
-            return HttpResponseRedirect('/login/')
+    else:
+        return HttpResponseRedirect('/login/')
+    doctors = Doctors.objects.all()
+    return render(request, 'doctor_choice.html', context={'doctors':doctors, 'title': 'Выберите врача'})
+
+
+class CreateCouponView(View):
+    def get(self, request, doctor_id):
+        dates = Coupons.objects.filter(doctor = doctor_id).filter(adm_date__gte=datetime.datetime.now())
         coupon_form = CreateCouponForm()
-        return render(request, 'add_coupon.html', context={'coupon_form': coupon_form, 'title': 'Запись к врачу'})
+        return render(request, 'add_coupon.html', context={'coupon_form': coupon_form, 'dates': dates, 'title': 'Запись к врачу'})
 
-    def post(self, request):
+    def post(self, request, doctor_id):
         bound_form = CreateCouponForm(request.POST)
-
+        
         if bound_form.is_valid():
-            bound_form.save(request.user)
+            doctor = Doctors.objects.get(doctor_id = doctor_id)
+            if request.user.is_staff:
+                new_coupon = bound_form.staff_save(doctor)
+            else:
+                new_coupon = bound_form.save(request.user, doctor)
             return render(request, 'success.html')
-
+        
         return render(request, 'add_coupon.html' ,context={'coupon_form': bound_form})
 
 
 class UpdateCoupon(View):
     def get(self, request, coupon_id):
+        doctor = Coupons.objects.get(coupons_id = coupon_id).doctor
+        dates = Coupons.objects.filter(doctor = doctor).filter(adm_date__gte=datetime.datetime.now())
         coupon_form = CreateCouponForm()
-        return render(request, 'add_coupon.html', context={'coupon_form': coupon_form, 'title': 'Изменение записи к врачу'})
+        return render(request, 'update_coupon.html', context={'coupon_form': coupon_form, 'dates': dates, 'title': 'Изменение записи к врачу'})
 
     def post(self, request, coupon_id):
         bound_form = CreateCouponForm(request.POST)
@@ -60,11 +74,10 @@ class UpdateCoupon(View):
         if bound_form.is_valid():
             coupon = Coupons.objects.get(coupons_id = coupon_id)
             coupon.adm_date = bound_form.cleaned_data['adm_date']
-            coupon.doctor = bound_form.cleaned_data['doctor']
             coupon.save()
             return render(request, 'success.html')
 
-        return render(request, 'add_coupon.html' ,context={'coupon_form': bound_form})
+        return render(request, 'update_coupon.html' ,context={'coupon_form': bound_form})
 
 
 class DeleteCoupon(View):

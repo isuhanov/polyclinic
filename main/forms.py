@@ -17,17 +17,26 @@ class DateInput(forms.DateInput):#объявляю поле ввода даты
 
 class CreateCouponForm(forms.Form):
     adm_date = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'])
-    doctor = forms.ModelChoiceField(Doctors.objects.all())
+    patient = forms.ModelChoiceField(Patients.objects.all(), empty_label='Выберите пациента', required=False)
 
-    adm_date.widget.attrs.update({'class': 'form_input', 'autocomplete': 'off'})    
-    doctor.widget.attrs.update({'class': 'form_input'})    
+    adm_date.widget.attrs.update({'class': 'form_input', 'autocomplete': 'off', 'placeholder': 'Время посещения...'})    
+    patient.widget.attrs.update({'class': 'form_input'})   
 
-    def save(self, p_user):
+    def save(self, p_user, doctor):
         patient_user = Patients.objects.get(user = p_user)
         new_coupon = Coupons.objects.create(
             adm_date = self.cleaned_data['adm_date'],
             patient = patient_user,
-            doctor = self.cleaned_data['doctor']
+            doctor = doctor
+        )
+
+        return new_coupon
+
+    def staff_save(self, doctor):
+        new_coupon = Coupons.objects.create(
+            adm_date = self.cleaned_data['adm_date'],
+            patient = self.cleaned_data['patient'],
+            doctor = doctor
         )
 
         return new_coupon
@@ -71,7 +80,7 @@ class RegisterForm(forms.Form):
     bd.widget.attrs.update({'class': 'form_input', 'placeholder': 'Дата рождения...'})
     policy.widget.attrs.update({'class': 'form_input', 'placeholder': 'Медицинский полис...'})
     passport.widget.attrs.update({'class': 'form_input', 'placeholder': 'Паспорт...'})
-    login.widget.attrs.update({'class': 'form_input', 'placeholder': 'Логин...'})
+    login.widget.attrs.update({'class': 'form_input', 'placeholder': 'Почта...'})
     password.widget.attrs.update({'class': 'form_input', 'placeholder': 'Пароль...'})
     password2.widget.attrs.update({'class': 'form_input', 'placeholder': 'Повторите пароль...'})
 
