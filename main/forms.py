@@ -1,5 +1,4 @@
-from email import policy
-from msilib.schema import Registry
+from distutils.command.clean import clean
 from django import forms
 from django.forms import widgets
 from .models import *
@@ -10,17 +9,94 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 import datetime
 
+set_number = {'1','2','3','4','5','6','7','8','9','0'}
+set_letters_cir = {' ', 'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я' }
+set_letters_lat = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}
+set_taboo_letters = {'?', '/', ',', '.', '!', '@', ';', ':', '<', '>', '=', '+', '"', "'", '%', '&', '|'}
+
+
 class DateInput(forms.DateInput):#объявляю поле ввода даты
     input_type = 'date'
+
+# ------------------------------------- проверки -------------------------------------------------------
+# функция проверки даты рождаения
+def check_bd(bd):
+    if bd > datetime.date.today():
+        raise ValidationError('Дата рождения не должна превышать настоящую')
+
+# функция проверки даты приема
+def check_adm_date(adm_date):
+    if adm_date.timestamp() < datetime.datetime.now().timestamp():
+        raise ValidationError('Неверная дата')
+    # if Coupons.objects.filter(doctor=doctor).filter()
+
+# функция проверки фио
+def check_fio(fio):
+    for i in fio.lower():
+        if not(i in set_letters_cir or i in set_letters_lat):
+            raise ValidationError('Поле содержит недопустимые символы')
+    if len(fio) > 100:
+        raise ValidationError('Кол-во символов превышает предел')
+
+# функция проверки серии паспорта
+def check_numfield(pasp_seria, am):
+    for i in pasp_seria:
+        if not(i in set_number):
+            raise ValidationError('Поле содержит недопустимые символы')
+    if len(pasp_seria) > am:
+        raise ValidationError(f'В поле слишком много символов, необходимо {am}')
+    if len(pasp_seria) < am:
+        raise ValidationError(f'В поле недостаточно символов, необходимо {am}')
+
+# функция проверки логина
+def check_login(login):
+    for i in login.lower():
+        if i in set_letters_cir:
+            raise ValidationError('Поле содержит недопустимые символы')
+
+# функция проверки пароля
+def check_pass(password):
+    password.lower
+    for i in password:
+        if i in set_taboo_letters or i in set_letters_cir:
+            raise ValidationError('Пароль содержит недопустимые символы')
+    if len(password) > 30:
+        raise ValidationError('В пароле слишком много символов, максимум 30')
+    if len(password) < 8:
+        raise ValidationError('В пароле недостаточно символов, минимум 8')
+
+# функиция проверки существования логина
+def check_login_exists(login):
+    if User.objects.filter(username=login).exists():
+        raise ValidationError('Такой пользователь уже существует')
+
+# функиция проверки несуществования логина
+def check_login_unexists(login):
+    if not (User.objects.filter(username=login).exists()):
+        raise ValidationError('Такой пользователь не существует')
 
 
 
 class CreateCouponForm(forms.Form):
     adm_date = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'])
     patient = forms.ModelChoiceField(Patients.objects.all(), empty_label='Выберите пациента', required=False)
+    doctor = ''
 
     adm_date.widget.attrs.update({'class': 'form_input', 'autocomplete': 'off', 'placeholder': 'Время посещения...'})    
-    patient.widget.attrs.update({'class': 'form_input'})   
+    patient.widget.attrs.update({'class': 'form_input'})  
+
+    def clean_adm_date(self):
+        new_adm_date = self.cleaned_data['adm_date']
+        check_adm_date(new_adm_date)
+        if Coupons.objects.filter(doctor = self.doctor).filter(adm_date=self.cleaned_data['adm_date']).exists():
+            print('дата занята')
+            raise ValidationError('Дата занята')
+        delta = new_adm_date.timestamp() - datetime.datetime.now().timestamp()
+        delat_days = (datetime.datetime.fromtimestamp(delta) - datetime.datetime.fromtimestamp(0)).days
+        if  delat_days > 3:
+            raise ValidationError('Можно записаться тольок на 3 дня вперед')
+        return new_adm_date
+
 
     def save(self, p_user, doctor):
         patient_user = Patients.objects.get(user = p_user)
@@ -29,17 +105,19 @@ class CreateCouponForm(forms.Form):
             patient = patient_user,
             doctor = doctor
         )
-
         return new_coupon
 
-    def staff_save(self, doctor):
+    def staff_save(self):
         new_coupon = Coupons.objects.create(
             adm_date = self.cleaned_data['adm_date'],
             patient = self.cleaned_data['patient'],
-            doctor = doctor
+            doctor = self.doctor
         )
-
         return new_coupon
+        pass
+
+    def set_doctor(self, doctor):
+        self.doctor = doctor
 
 
 
@@ -55,6 +133,7 @@ class LoginForm(forms.Form):#форма авторизации и аутенти
         password = self.cleaned_data['password']
 
         if not User.objects.filter(username=login).exists():
+            print(self.errors)
             raise ValidationError('Пользователь не существует')
         user = User.objects.get(username=login)
         if user:
@@ -83,6 +162,47 @@ class RegisterForm(forms.Form):
     login.widget.attrs.update({'class': 'form_input', 'placeholder': 'Почта...'})
     password.widget.attrs.update({'class': 'form_input', 'placeholder': 'Пароль...'})
     password2.widget.attrs.update({'class': 'form_input', 'placeholder': 'Повторите пароль...'})
+
+    def clean_first_name(self):
+        new_first_name = self.cleaned_data['first_name']
+        check_fio(new_first_name)
+        return new_first_name
+
+    def clean_last_name(self):
+        new_last_name = self.cleaned_data['last_name']
+        check_fio(new_last_name)
+        return new_last_name
+
+    def clean_bd(self):
+        new_bd = self.cleaned_data['bd']
+        check_bd(new_bd)
+        return new_bd
+
+    def clean_policy(self):
+        new_policy = self.cleaned_data['policy']
+        check_numfield(new_policy, 16)
+        return new_policy
+
+    def clean_passport(self):
+        new_passport = self.cleaned_data['passport']
+        check_numfield(new_passport, 10)
+        return new_passport
+    
+    def clean_login(self):
+        new_login = self.cleaned_data['login']
+        check_login_exists(new_login)
+        return new_login
+    
+    def clean_password(self):
+        self.new_password = self.cleaned_data['password']
+        check_pass(self.new_password)
+        return self.new_password
+
+    def clean_password2(self):
+        if self.new_password != self.cleaned_data['password2']:
+            raise ValidationError('Пароли не совпадают')
+        return self.cleaned_data['password2']
+
 
     def save_user(self):
         new_user = User.objects.create(
@@ -122,6 +242,42 @@ class RegistrEmplForm(forms.Form):
     password.widget.attrs.update({'class': 'form_input', 'placeholder': 'Пароль...'})
     password2.widget.attrs.update({'class': 'form_input', 'placeholder': 'Повторите пароль...'})
 
+    def clean_first_name(self):
+        new_first_name = self.cleaned_data['first_name']
+        check_fio(new_first_name)
+        return new_first_name
+
+    def clean_last_name(self):
+        new_last_name = self.cleaned_data['last_name']
+        check_fio(new_last_name)
+        return new_last_name
+
+    def clean_bd(self):
+        new_bd = self.cleaned_data['bd']
+        check_bd(new_bd)
+        return new_bd
+
+    def clean_post(self):
+        new_post = self.cleaned_data['post']
+        check_fio(new_post)
+        return new_post
+    
+    def clean_login(self):
+        new_login = self.cleaned_data['login']
+        check_login_exists(new_login)
+        return new_login
+    
+    def clean_password(self):
+        self.new_password = self.cleaned_data['password']
+        check_pass(self.new_password)
+        return self.new_password
+
+    def clean_password2(self):
+        if self.new_password != self.cleaned_data['password2']:
+            raise ValidationError('Пароли не совпадают')
+        return self.cleaned_data['password2']
+
+
     def save_user(self):
         new_user = User.objects.create(
             username= self.cleaned_data['login'],
@@ -149,7 +305,25 @@ class RegistrDoctorForm(forms.Form):
     fio.widget.attrs.update({'class': 'form_input', 'placeholder': 'ФИО...'})
     direction.widget.attrs.update({'class': 'form_input', 'placeholder': 'Должность...'})
     cab.widget.attrs.update({'class': 'form_input', 'placeholder': 'Кабинет...'})
-   
+
+    def clean_fio(self):
+        new_fio = self.cleaned_data['fio']
+        check_fio(new_fio)
+        return new_fio
+
+    def clean_cab(self):
+        new_cab = self.cleaned_data['cab']
+        for i in new_cab:
+            if not(i in set_number):
+                raise ValidationError('Поле содержит недопустимые символы')
+        if len(new_cab) > 3:
+            raise ValidationError('В поле слишком много символов')
+        if new_cab == '0':
+            raise ValidationError('Недопустимое значение')
+        if Doctors.objects.filter(cab=new_cab).exists():
+            raise ValidationError('Кабинет занят другим врачем')
+        return new_cab
+
     def save_doctor(self):
         new_doctor = Doctors.objects.create(
             fio = self.cleaned_data['fio'],

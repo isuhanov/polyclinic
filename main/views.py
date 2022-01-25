@@ -1,3 +1,4 @@
+from datetime import timedelta
 import json
 from re import L
 import re
@@ -44,18 +45,19 @@ def doctor_choice(request):
 class CreateCouponView(View):
     def get(self, request, doctor_id):
         dates = Coupons.objects.filter(doctor = doctor_id).filter(adm_date__gte=datetime.datetime.now())
-        coupon_form = CreateCouponForm()
-        return render(request, 'add_coupon.html', context={'coupon_form': coupon_form, 'dates': dates, 'title': 'Запись к врачу'})
+        coupon_form = CreateCouponForm(initial = {'doctor': doctor_id})
+        return render(request, 'add_coupon.html', context={'coupon_form': coupon_form, 'dates': dates, 'datetime': datetime, 'title': 'Запись к врачу'})
 
     def post(self, request, doctor_id):
         bound_form = CreateCouponForm(request.POST)
+        doctor = Doctors.objects.get(doctor_id = doctor_id)
+        bound_form.set_doctor(doctor)
         
         if bound_form.is_valid():
-            doctor = Doctors.objects.get(doctor_id = doctor_id)
             if request.user.is_staff:
-                new_coupon = bound_form.staff_save(doctor)
+                new_coupon = bound_form.staff_save()
             else:
-                new_coupon = bound_form.save(request.user, doctor)
+                new_coupon = bound_form.save(request.user)
             return render(request, 'success.html')
         
         return render(request, 'add_coupon.html' ,context={'coupon_form': bound_form})
@@ -70,9 +72,10 @@ class UpdateCoupon(View):
 
     def post(self, request, coupon_id):
         bound_form = CreateCouponForm(request.POST)
+        coupon = Coupons.objects.get(coupons_id = coupon_id)
+        bound_form.set_doctor(coupon.doctor)
 
         if bound_form.is_valid():
-            coupon = Coupons.objects.get(coupons_id = coupon_id)
             coupon.adm_date = bound_form.cleaned_data['adm_date']
             coupon.save()
             return render(request, 'success.html')

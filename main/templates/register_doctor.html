@@ -12,13 +12,23 @@
     <div class="registr-form">
         <form action="" method="post">
             <h2 class="title">Добавление врача</h2>
-
             {% csrf_token %}
-            {{ form.fio }}
-            {{ form.direction }}
-            {{ form.cab }}
 
-            {{ form.errors }}
+            {{ form.fio }}
+            {% if form.fio.errors %}
+                <div class="errors">
+                    {{ form.fio.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.direction }}
+
+            {{ form.cab }}
+            {% if form.cab.errors %}
+                <div class="errors">
+                    {{ form.cab.errors }}
+                </div>
+            {% endif %}
 
             <button type="submit" class="btn form-btn">Добавить врача</button>
         </form>

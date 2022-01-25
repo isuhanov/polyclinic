@@ -12,10 +12,14 @@
     <div class="login-form">
         <form action="" method="post">
             <h2 class="title">Вход</h2>
-
             {% csrf_token %}
+
             {{ form.login }}
-            {{ form.password }}
+            {{ form.password }}            
+
+            {{ form.errors.login }}
+            {{ form.errors }}
+
 
             <button type="submit" class="btn form-btn">Войти</button>
             <a href="{% url 'reg_url' %}" class="reg-link">Зарегистрироваться</a>

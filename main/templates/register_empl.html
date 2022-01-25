@@ -12,17 +12,56 @@
     <div class="registr-form">
         <form action="" method="post">
             <h2 class="title">Регистрация сотрудника</h2>
-
             {% csrf_token %}
-            {{ form.first_name }}
-            {{ form.last_name }}
-            {{ form.bd }}
-            {{ form.post }}
-            {{ form.login }}
-            {{ form.password }}
-            {{ form.password2 }}
 
-            {{ form.errors }}
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="errors">
+                    {{ form.first_name.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <div class="errors">
+                    {{ form.last_name.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.bd }}
+            {% if form.bd.errors %}
+                <div class="errors">
+                    {{ form.bd.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.post }}
+            {% if form.post.errors %}
+                <div class="errors">
+                    {{ form.post.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.login }}
+            {% if form.login.errors %}
+                <div class="errors">
+                    {{ form.login.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="errors">
+                    {{ form.password.errors }}
+                </div>
+            {% endif %}
+
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div class="errors">
+                    {{ form.password2.errors }}
+                </div>
+            {% endif %}
 
             <button type="submit" class="btn form-btn">Добавить сотрудника</button>
         </form>

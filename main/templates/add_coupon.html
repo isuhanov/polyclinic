@@ -18,9 +18,15 @@
     <div class="coupon-form">
         <form action="" method="post" class="">
             <h2 class="title">{{ title }}</h2>
-
             {% csrf_token %}
+            
             {{ coupon_form.adm_date }}
+            {% if coupon_form.adm_date.errors %}
+              <div class="errors">
+                {{ coupon_form.adm_date.errors }}
+              </div>
+            {% endif %}
+
             <select class="form_input" >
               <option value="">
                 Недоступные часы запси
@@ -31,11 +37,11 @@
               </option>
               {% endfor %}
             </select>
+
             {% if request.user.is_staff %}
               {{ coupon_form.patient }}
             {% endif %}
 
-            {{ coupon_form.errors }}
             <button type="submit" class="btn form-btn">Записаться</button>
             
         </form>
