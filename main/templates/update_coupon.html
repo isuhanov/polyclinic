@@ -33,7 +33,7 @@
               </option>
               {% for date in dates %}
               <option value="" disabled>
-                {{ date.adm_date }}
+                {{ date.adm_date }} - {{ date.adm_date_end.time }}
               </option>
               {% endfor %}
             </select>

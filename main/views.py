@@ -39,7 +39,6 @@ class CouponView(View):
         bound_form = FilterForm(request.POST)
         if bound_form.is_valid():
             coupons = bound_form.get_coupons()
-            print(coupons)
         return render(request, 'coupon.html', context={'coupons': coupons, 'filter_form': bound_form})
 
 
@@ -87,6 +86,7 @@ class UpdateCoupon(View):
 
         if bound_form.is_valid():
             coupon.adm_date = bound_form.cleaned_data['adm_date']
+            coupon.adm_date_end = bound_form.cleaned_data['adm_date'] + datetime.timedelta(minutes=15)
             coupon.save()
             return render(request, 'success.html')
 

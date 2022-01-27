@@ -88,28 +88,36 @@ class CreateCouponForm(forms.Form):
     def clean_adm_date(self):
         new_adm_date = self.cleaned_data['adm_date']
         check_adm_date(new_adm_date)
+
         if Coupons.objects.filter(doctor = self.doctor).filter(adm_date=self.cleaned_data['adm_date']).exists():
-            print('дата занята')
             raise ValidationError('Дата занята')
+
+        for coupons in  Coupons.objects.filter(doctor = self.doctor):
+            if self.cleaned_data['adm_date'] > coupons.adm_date and self.cleaned_data['adm_date'] < coupons.adm_date_end:
+                raise ValidationError('Время приема забронированно')
+
         delta = new_adm_date.timestamp() - datetime.datetime.now().timestamp()
         delat_days = (datetime.datetime.fromtimestamp(delta) - datetime.datetime.fromtimestamp(0)).days
         if  delat_days > 3:
             raise ValidationError('Можно записаться тольок на 3 дня вперед')
+
         return new_adm_date
 
 
-    def save(self, p_user, doctor):
+    def save(self, p_user):
         patient_user = Patients.objects.get(user = p_user)
         new_coupon = Coupons.objects.create(
             adm_date = self.cleaned_data['adm_date'],
+            adm_date_end = self.cleaned_data['adm_date'] + datetime.timedelta(minutes=15),
             patient = patient_user,
-            doctor = doctor
+            doctor = self.doctor
         )
         return new_coupon
 
     def staff_save(self):
         new_coupon = Coupons.objects.create(
             adm_date = self.cleaned_data['adm_date'],
+            adm_date_end = self.cleaned_data['adm_date'] + datetime.timedelta(minutes=15),
             patient = self.cleaned_data['patient'],
             doctor = self.doctor
         )
@@ -128,10 +136,7 @@ class FilterForm(forms.Form):
     date_choice = forms.ChoiceField(choices = DATE_CHOICES, required=False)
     patient = forms.ModelChoiceField(Patients.objects.all(), empty_label='Выберите пациента', required=False)
     doctor = forms.ModelChoiceField(Doctors.objects.all(), empty_label='Выберите врача', required=False)
-
-    # date_choice.widget.attrs.update({'class': 'form_input'})
-    # patient.widget.attrs.update({'class': 'form_input'})
-    # doctor.widget.attrs.update({'class': 'form_input'})
+    
 
     def get_coupons(self):
         coupons = Coupons.objects.all()

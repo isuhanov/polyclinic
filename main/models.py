@@ -65,6 +65,7 @@ class Doctors(models.Model):
 class Coupons(models.Model):
     coupons_id = models.AutoField(primary_key=True, blank=False, verbose_name='ID талона')
     adm_date = models.DateTimeField(blank=False, verbose_name='Дата посещения')
+    adm_date_end = models.DateTimeField(blank=False, verbose_name='Время окончания приема')
     patient = models.ForeignKey(Patients,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Пациент')
     doctor = models.ForeignKey(Doctors,  on_delete=models.CASCADE, blank=False, null=True, verbose_name='Врач')
     
