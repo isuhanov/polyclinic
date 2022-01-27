@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from datetime import timedelta
 import json
 from re import L
@@ -21,16 +22,25 @@ def index(request):
 
 class CouponView(View):
     def get(self, request):
+        filter_form = FilterForm()
         if request.user.is_authenticated:
             user = request.user
         else:
             return HttpResponseRedirect('/login/')
-        if user.is_staff:
+        if user.is_staff or RegistryEmployee.objects.filter(user = request.user):
             coupons = Coupons.objects.all()
         else:
             current_patient = Patients.objects.get(user = user)
             coupons = Coupons.objects.filter(patient = current_patient)
-        return render(request, 'coupon.html', context={'coupons': coupons})
+
+        return render(request, 'coupon.html', context={'coupons': coupons, 'filter_form': filter_form})
+
+    def post(self, request):
+        bound_form = FilterForm(request.POST)
+        if bound_form.is_valid():
+            coupons = bound_form.get_coupons()
+            print(coupons)
+        return render(request, 'coupon.html', context={'coupons': coupons, 'filter_form': bound_form})
 
 
 def doctor_choice(request):

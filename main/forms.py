@@ -114,11 +114,42 @@ class CreateCouponForm(forms.Form):
             doctor = self.doctor
         )
         return new_coupon
-        pass
 
     def set_doctor(self, doctor):
         self.doctor = doctor
 
+
+class FilterForm(forms.Form):
+    DATE_CHOICES =(
+        ('all', 'all'),
+        ('active', 'active'),
+        ('disabled ', 'disabled')
+    )
+    date_choice = forms.ChoiceField(choices = DATE_CHOICES, required=False)
+    patient = forms.ModelChoiceField(Patients.objects.all(), empty_label='Выберите пациента', required=False)
+    doctor = forms.ModelChoiceField(Doctors.objects.all(), empty_label='Выберите врача', required=False)
+
+    # date_choice.widget.attrs.update({'class': 'form_input'})
+    # patient.widget.attrs.update({'class': 'form_input'})
+    # doctor.widget.attrs.update({'class': 'form_input'})
+
+    def get_coupons(self):
+        coupons = Coupons.objects.all()
+
+        if self.cleaned_data['date_choice'] == 'active':
+            coupons = coupons.filter(adm_date__gte=datetime.datetime.now())
+
+        if self.cleaned_data['date_choice'] != 'all' and self.cleaned_data['date_choice'] != 'active':
+            coupons = coupons.filter(adm_date__lt=datetime.datetime.now())
+        
+        if self.cleaned_data['patient'] != None:
+            coupons = coupons.filter(patient=self.cleaned_data['patient'])
+        
+        if self.cleaned_data['doctor'] != None:
+            coupons = coupons.filter(doctor=self.cleaned_data['doctor'])
+
+        return coupons
+        
 
 
 class LoginForm(forms.Form):#форма авторизации и аутентификации

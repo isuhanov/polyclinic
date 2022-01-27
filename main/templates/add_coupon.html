@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load main_get_filter %}
+
 
 {% block title %}
     Запись к врачу
@@ -38,7 +40,7 @@
               {% endfor %}
             </select>
 
-            {% if request.user.is_staff %}
+            {% if request.user.is_staff or request.user|is_empl %}
               {{ coupon_form.patient }}
             {% endif %}
 

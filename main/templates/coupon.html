@@ -1,39 +1,64 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load main_get_filter %}
 
 {% block title %}
     Главная
 {% endblock %}
 
 {% block content %}
-    <div class="coupon-view view-block">
-        {% for coupon in coupons %}
-            <div class="view-item">
-                <div class="coupon-info">
-                    <div class="coupon-date">
-                        <p>{{ coupon.adm_date }}</p>
-                    </div>
-                    <div class="coupon-doctor-direction">
-                        <p>{{ coupon.doctor.direction }}</p>
-                    </div>
-                    <div class="coupon-doctor">
-                        <p>{{ coupon.doctor }}</p>
-                    </div>
-                    <div class="coupon-cab">
-                        <p><span style="font-weight: 700;">Кабинет:</span> {{ coupon.doctor.cab }}</p>
-                    </div>
-                    {% if request.user.is_staff %}
-                        <div class="coupon-doctor">
-                            <p>{{ coupon.patient.user.id }}. {{ coupon.patient.user.first_name }} {{ coupon.patient.user.last_name }} ({{ coupon.patient.user.username }})</p>
-                        </div>
-                    {% endif %}
+<div class="coupon-view">
+    <div class="view-block">
+        {% if not coupons  %}
+            <h2 class="title">К сожалению ничего не нашлось :((</h2>
+        {% else %}
 
+            {% for coupon in coupons %}
+                <div class="view-item">
+                    <div class="coupon-info">
+                        <div class="coupon-date">
+                            <p>{{ coupon.adm_date }}</p>
+                        </div>
+                        <div class="coupon-doctor-direction">
+                            <p>{{ coupon.doctor.direction }}</p>
+                        </div>
+                        <div class="coupon-doctor">
+                            <p>{{ coupon.doctor }}</p>
+                        </div>
+                        <div class="coupon-cab">
+                            <p><span style="font-weight: 700;">Кабинет:</span> {{ coupon.doctor.cab }}</p>
+                        </div>
+                        {% if request.user.is_staff or request.user|is_empl %}
+                            <div class="coupon-doctor">
+                                <p>{{ coupon.patient.user.id }}. {{ coupon.patient.user.first_name }} {{ coupon.patient.user.last_name }} ({{ coupon.patient.user.username }})</p>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    <div class="coupon-btn">
+                        <a href="{{ coupon.get_update_url }}" class="btn">Изменить</a>
+                        <a href="{{ coupon.get_delete_url }}" class="btn">Отменить</a>
+                    </div>
                 </div>
-                <div class="coupon-btn">
-                    <a href="{{ coupon.get_update_url }}" class="btn">Изменить</a>
-                    <a href="{{ coupon.get_delete_url }}" class="btn">Отменить</a>
-                </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+
+        {% endif %}   
     </div>
+
+    {% if request.user.is_staff or request.user|is_empl %}
+        <div class="filter">
+            <form action="" style="width: 100%;" method="post">
+                {% csrf_token %}
+                {{ filter_form.date_choice }}
+                {{ filter_form.patient }}
+                {{ filter_form.doctor }}
+                
+                <button type="submit" class="btn filter-btn" style="align-self: flex-end;">Применить</button>
+                <div class="coupon-btn">
+                    <a href="{% url 'coupon_url' %}" class="btn red">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

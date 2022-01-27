@@ -18,7 +18,7 @@
     <div class="coupon-form">
         <!-- <form action="" method="post" class=""> -->
         <div class="view-block">
-            <h2 class="title">{{ title }}</h2>    
+            <h2 class="title" style="margin-bottom: 20px;">{{ title }}</h2>    
             {% for doctor in doctors %}
             <a href="{{ doctor.get_chioce_url }}" class="view-item doctor-card">
                 {{ doctor.fio }} - {{ doctor.direction }}
